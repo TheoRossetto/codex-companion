@@ -1,0 +1,72 @@
+{
+  "name": "codex-companion",
+  "productName": "Orbit for Codex",
+  "version": "0.4.0",
+  "description": "An independent Codex desktop companion adapted from Louis Raillé's Coucou.",
+  "author": "TheoRossetto",
+  "license": "MIT",
+  "private": true,
+  "type": "module",
+  "main": "app/main.cjs",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/TheoRossetto/codex-companion.git"
+  },
+  "scripts": {
+    "build": "tsc --noEmit && vite build",
+    "start": "electron .",
+    "dev": "npm run build && electron .",
+    "test": "node --test test/*.test.mjs",
+    "test:desktop": "node scripts/test-island.mjs",
+    "test:codex": "node scripts/test-codex.mjs",
+    "hooks": "node scripts/hooks.mjs",
+    "pack": "npm run build && electron-builder --win portable --x64",
+    "check:release": "node scripts/check-release.mjs",
+    "test:browser": "node scripts/test-island.mjs",
+    "pack:store": "npm run build && node scripts/store-assets.mjs && electron-builder --config store/electron-builder.cjs --win appx --x64 --publish never",
+    "test:chat": "node scripts/test-chat.mjs"
+  },
+  "build": {
+    "appId": "io.github.theorossetto.codexcompanion",
+    "productName": "Orbit for Codex",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "app/**/*",
+      "bridge/**/*",
+      "dist/**/*",
+      "assets/**/*",
+      "LICENSE",
+      "NOTICE.md",
+      "README.md",
+      "PRIVACY.md",
+      "PARITY.md"
+    ],
+    "asarUnpack": [
+      "bridge/**/*",
+      "app/pdf-worker.cjs",
+      "node_modules/@napi-rs/**/*",
+      "node_modules/pdfjs-dist/**/*"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "assets/icon.png",
+      "signExecutable": false
+    },
+    "portable": {
+      "artifactName": "Orbit-for-Codex-${version}-Windows-x64.exe"
+    }
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "electron": "44.5.1",
+    "electron-builder": "26.15.3",
+    "pngjs": "7.0.0",
+    "typescript": "7.0.2",
+    "vite": "8.3.1"
+  },
+  "dependencies": {
+    "pdfjs-dist": "6.3.289"
+  }
+}

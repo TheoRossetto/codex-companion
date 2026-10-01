@@ -1,0 +1,9 @@
+import { State } from '../core/state';
+import { BotEngine } from '../mochi/engine';
+import type { UploadFrame } from './sequence';
+export interface UploadCanvasActions {ask():void;cancel():void}
+export class UploadCanvas {
+ readonly el=document.createElement('div');private canvas=document.createElement('canvas');private bot=new BotEngine();private choices=document.createElement('div');
+ constructor(actions:UploadCanvasActions){this.el.id='upload-layer';this.canvas.id='upload-canvas';this.el.append(this.canvas,this.choices);this.choices.id='upload-overlay';for(const [label,action,x,w] of [['Conversar sobre o arquivo',actions.ask,114,190],['Cancelar',actions.cancel,314,96]] as const){const b=document.createElement('button');b.className='upload-hit';b.textContent=label;b.style.cssText='left:'+x+'px;top:113px;width:'+w+'px;height:26px;color:#fff;background:#273b4d;border-radius:8px;';b.onclick=action;this.choices.append(b)}}
+ draw(f:UploadFrame,_wall:number){const d=Math.min(2,devicePixelRatio);this.canvas.width=640*d;this.canvas.height=176*d;this.canvas.style.width='640px';this.canvas.style.height='176px';const c=this.canvas.getContext('2d')!;c.scale(d,d);c.fillStyle='#15191f';c.beginPath();c.roundRect(10,42,620,124,20);c.fill();this.bot.lookX=f.lookX;this.bot.update(1/60);c.save();c.translate(20,54);this.bot.draw(c,85,85);c.restore();c.fillStyle='#e3edf5';c.font='600 13px system-ui';c.fillText(f.chooseAlpha>.1?'Arquivo preparado':f.barAlpha>.1?'Preparando contexto…':'Solte um arquivo aqui',114,80);c.font='12px system-ui';c.fillStyle='#9faebd';c.fillText((State.droppedFile?.name||'Enviado ao Codex somente quando você enviar a mensagem.').slice(0,65),114,101);this.choices.style.display=f.chooseAlpha>.5?'block':'none';if(f.barAlpha>.1&&f.chooseAlpha<.5){c.fillStyle='#263749';c.fillRect(114,126,460,3);c.fillStyle='#85d8ed';c.fillRect(114,126,460*f.progress,3)}}
+}

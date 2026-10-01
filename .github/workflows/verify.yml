@@ -1,0 +1,29 @@
+name: Verify Windows companion
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm install --global @openai/codex@0.159.3
+      - run: npm test
+      - run: npm run build
+      - run: npm run test:desktop
+      - run: npm run pack
+      - name: Test packaged desktop
+        shell: pwsh
+        run: |
+          $env:ORBIT_TEST_EXE = (Resolve-Path 'release/win-unpacked/Orbit for Codex.exe').Path
+          npm run test:desktop
+      - run: npm run check:release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: orbit-windows
+          path: release/Orbit-for-Codex-*-Windows-x64.exe
