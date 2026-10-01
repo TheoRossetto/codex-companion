@@ -1,5 +1,5 @@
 const {app,BrowserWindow,ipcMain,screen,Tray,Menu,nativeImage,shell,session,dialog,safeStorage}=require('electron');
-const fs=require('node:fs');const path=require('node:path');const os=require('node:os');const {randomUUID,createHash}=require('node:crypto');const {execFileSync}=require('node:child_process');
+const fs=require('node:fs');const path=require('node:path');const os=require('node:os');const {randomUUID,createHash}=require('node:crypto');const {findNode}=require('./node-runtime.cjs');
 const {startServer}=require('../bridge/server.cjs');const {storageDir}=require('../bridge/protocol.cjs');const installer=require('../bridge/install.cjs');const {Sessions}=require('./sessions.cjs');const {Codex}=require('./codex.cjs');const pkg=require('../package.json');
 const dir=storageDir();app.setPath('userData',path.join(dir,'desktop'));
 const sessions=new Sessions(),grants=new Map(),attachments=new Map();
@@ -23,7 +23,7 @@ function secureWindow(options,file){const w=new BrowserWindow({...options,icon:p
 function trusted(e){if(![win,settingsWin].some(w=>w&&!w.isDestroyed()&&e.sender===w.webContents&&e.senderFrame===w.webContents.mainFrame))throw new Error('Invalid sender')}
 function text(v,max=10000){if(typeof v!=='string'||v.length>max)throw new Error('Invalid text');return v}
 function bool(v){if(typeof v!=='boolean')throw new Error('Invalid boolean');return v}
-function hooksStatus(){const p=nodePath?installer.preview({nodePath,dir}):null;return{installed:!!p?.installed,settingsPath:p?.file||path.join(process.env.CODEX_HOME||path.join(os.homedir(),'.codex'),'hooks.json'),hookPath:path.join(dir,'bridge','relay.cjs'),hookReady:!!nodePath}}
+function hooksStatus(){if(!nodePath)nodePath=findNode();const p=nodePath?installer.preview({nodePath,dir}):null;return{installed:!!p?.installed,settingsPath:p?.file||path.join(process.env.CODEX_HOME||path.join(os.homedir(),'.codex'),'hooks.json'),hookPath:path.join(dir,'bridge','relay.cjs'),hookReady:!!nodePath}}
 const secretKeys=new Set(['stripe-api-key','github-token','vercel-token','n8n-url','n8n-api-key','resend-api-key','notion-api-key','calcom-api-key']);
 function secret(key,value){if(!secretKeys.has(key))throw new Error('Invalid key');const file=path.join(dir,'secrets.json'),data=readJson(file,{});if(value===undefined){return data[key]?safeStorage.decryptString(Buffer.from(data[key],'base64')):null}if(value){if(!safeStorage.isEncryptionAvailable())throw new Error('Armazenamento protegido do Windows indisponível.');data[key]=safeStorage.encryptString(text(value)).toString('base64')}else delete data[key];writeJson(file,data)}
 let integrations;
@@ -58,7 +58,7 @@ if(!app.requestSingleInstanceLock())app.quit();else{
   fs.mkdirSync(project,{recursive:true});cleanupOldInbox();settings={...defaults,...readJson(path.join(dir,'settings.json'),{})};const saved=readJson(path.join(dir,'project.json'),{});if(saved.project&&fs.existsSync(saved.project))project=saved.project;
   if(process.windowsStore)require('./store-paths.cjs').validateStorePaths({home:os.homedir(),localAppData:process.env.LOCALAPPDATA,roamingAppData:process.env.APPDATA,codexHome:process.env.CODEX_HOME||path.join(os.homedir(),'.codex'),dir});
   session.defaultSession.setPermissionRequestHandler((_w,_p,cb)=>cb(false));session.defaultSession.setPermissionCheckHandler(()=>false);
-  try{nodePath=execFileSync('where.exe',['node'],{encoding:'utf8',windowsHide:true,timeout:3000}).trim().split(/\r?\n/)[0]}catch{}
+  nodePath=findNode();
   win=secureWindow({title:'Orbit for Codex',width:720,height:320,frame:false,transparent:true,alwaysOnTop:true,skipTaskbar:true,resizable:false,show:false,focusable:false},'index.html');
   ipcMain.handle('orbit:invoke',(e,command,args={})=>{trusted(e);if(!Object.hasOwn(commands,command))throw new Error('Invalid command');return commands[command](args||{})});
   ipcMain.handle('orbit:drop',(e,paths)=>{trusted(e);if(!Array.isArray(paths)||paths.length>1)throw new Error('Invalid drop');return paths.map(p=>grantFile(text(p,4096)))});

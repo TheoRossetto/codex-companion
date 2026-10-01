@@ -98,7 +98,7 @@ function claudeSection(status: HookStatus): HTMLElement {
     // every Codex session a broken hook and nothing to show for it.
     if (!status.hookReady) {
       install.disabled = true;
-      install.title = "The relay isn't installed yet.";
+      install.title = "Node.js runtime was not found. Install Node.js 22+ and reopen preferences.";
     }
     actions.append(install);
     if (status.installed) {
