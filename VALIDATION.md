@@ -24,3 +24,5 @@ Reviewed 2026-10-01. Local implementation and source desktop tests passed. Micro
 
 The parity reference is Coucou Windows at the source commit in NOTICE.md. PARITY.md records platform differences and explicit attachment limits.
 The packaged ASAR was also exercised through the development Electron runtime: chat, text/PDF attachments and approval UI passed. This validates archive contents, not corporate Defender acceptance or installed MSIX behavior.
+
+Final delivery checks: GitHub Actions run 36865298048 passed on Windows, including the packaged executable desktop test. After relocation to the requested project folder, a full packaged-ASAR run also passed and refreshed the cropped island screenshots. The first relocation run could not discover Node (hook installation remained disabled); a repeat passed without code/configuration changes. This intermittent discovery failure remains an operational limitation to investigate if it recurs.
