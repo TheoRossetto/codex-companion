@@ -48,7 +48,7 @@ Os testes automatizados usam dados isolados e provedor loopback. A validação d
 
 O EXE portátil e o MSIX são gerados em `release/`. A política corporativa de reputação/idade do Defender pode bloquear o executável não assinado; executar como administrador não altera essa regra. A assinatura pública do pacote Store depende da Microsoft. O MSIX local não é um pacote já certificado.
 
-A identidade da reserva Store é `ThoRossetto.OrbitforCodex`, conforme atribuída pelo Partner Center, produto `9P39BQKN6F41`. O manifesto Windows 11 x64 usa `runFullTrust` e a exclusão de virtualização limitada a `%LOCALAPPDATA%\OrbitForCodex` para comunicar com Node/Codex fora do pacote. O pacote 0.4.1.0 está no rascunho da Store com a listagem atualizada. O reenvio aguarda a conclusão da classificação etária; aprovação e publicação ainda estão pendentes. Consulte VALIDATION.md para os resultados do kit de certificação e as limitações de teste instalado.
+A identidade da reserva Store é `ThoRossetto.OrbitforCodex`, conforme atribuída pelo Partner Center, produto `9P39BQKN6F41`. O manifesto Windows 11 x64 usa `runFullTrust` e a exclusão de virtualização limitada a `%LOCALAPPDATA%\OrbitForCodex` para comunicar com Node/Codex fora do pacote. O pacote 0.4.1.0 foi reenviado à Store em 01/10/2026 com a listagem e a classificação etária concluídas. O Partner Center confirma “In certification”, com pré-processamento em andamento. A publicação está configurada para começar automaticamente após aprovação; aprovação e publicação ainda estão pendentes. Consulte VALIDATION.md para os resultados do kit de certificação e as limitações de teste instalado.
 
 ## Créditos
 
